@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parqueadero — Conjunto Residencial</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --accent: #4fffb0;
+    --accent-dim: rgba(79,255,176,0.12);
+    --accent-dim2: rgba(79,255,176,0.22);
+    --text: #eef0f6;
+    --text2: #8b90a8;
+    --text3: #5a5f75;
+    --danger: #ff6b6b;
+    --danger-dim: rgba(255,107,107,0.12);
+    --gold: #ffd166;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 480px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--accent-dim);
+    border: 1px solid rgba(79,255,176,0.25);
+    margin-bottom: 1rem;
+  }
+
+  .logo-mark svg {
+    width: 28px;
+    height: 28px;
+    fill: var(--accent);
+  }
+
+  h1 {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    color: var(--text2);
+    margin-top: 6px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 400;
+  }
+
+  /* Tariff chips */
+  .tariff-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 2rem;
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+
+  .tariff-chip {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .tariff-chip .label {
+    font-size: 11px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .tariff-chip .value {
+    font-size: 1.15rem;
+    font-weight: 600;
+  }
+
+  .tariff-chip .value.green { color: var(--accent); }
+  .tariff-chip .value.gold { color: var(--gold); }
+
+  /* Card */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    animation: fadeUp 0.5s 0.15s ease both;
+  }
+
+  .card-title {
+    font-size: 11px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+
+  .row-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-size: 12px;
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+  }
+
+  input[type="date"],
+  input[type="time"] {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.95rem;
+    padding: 10px 12px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+    color-scheme: dark;
+  }
+
+  input[type="date"]:focus,
+  input[type="time"]:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 1.25rem 0;
+  }
+
+  /* Button */
+  .btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #0a1a12;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.01em;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .btn:hover { opacity: 0.9; }
+  .btn:active { transform: scale(0.98); }
+
+  /* Error */
+  .error-box {
+    display: none;
+    background: var(--danger-dim);
+    border: 1px solid rgba(255,107,107,0.25);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    color: var(--danger);
+    font-family: 'DM Mono', monospace;
+    margin-top: 0.75rem;
+  }
+
+  /* Result */
+  .result-card {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 1rem;
+    animation: fadeUp 0.35s ease both;
+  }
+
+  .result-header {
+    background: var(--accent-dim2);
+    border-bottom: 1px solid rgba(79,255,176,0.15);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .result-header .r-label {
+    font-size: 11px;
+    color: rgba(79,255,176,0.7);
+    font-family: 'DM Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .result-header .r-tiempo {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .result-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.75rem;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .result-badge.gratis {
+    background: rgba(79,255,176,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(79,255,176,0.3);
+  }
+
+  .result-badge.cobro {
+    background: rgba(255,209,102,0.15);
+    color: var(--gold);
+    border: 1px solid rgba(255,209,102,0.3);
+  }
+
+  .result-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .result-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+
+  .result-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .result-row .r-key {
+    color: var(--text2);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.8rem;
+  }
+
+  .result-row .r-val {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .result-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    padding: 1rem 1.5rem;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+  }
+
+  .result-total .t-label {
+    font-size: 0.85rem;
+    color: var(--text2);
+  }
+
+  .result-total .t-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+  }
+
+  .t-value.gratis-color { color: var(--accent); }
+  .t-value.cobro-color { color: var(--gold); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.75rem;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+      </svg>
+    </div>
+    <h1>Parqueadero</h1>
+    <p class="subtitle">Conjunto Residencial · Calculadora de cobro</p>
+  </div>
+
+  <div class="tariff-row">
+    <div class="tariff-chip">
+      <span class="label">Primeras 2 h</span>
+      <span class="value green">Gratis</span>
+    </div>
+    <div class="tariff-chip">
+      <span class="label">Hora adicional</span>
+      <span class="value gold">$1.000</span>
+    </div>
+    <div class="tariff-chip">
+      <span class="label">Fracción</span>
+      <span class="value" style="color:var(--text2);">Hora entera</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="card-title">Datos de ingreso</p>
+    <div class="row-fields">
+      <div class="field">
+        <label>Fecha entrada</label>
+        <input type="date" id="fechaEntrada">
+      </div>
+      <div class="field">
+        <label>Hora entrada</label>
+        <input type="time" id="horaEntrada">
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <p class="card-title">Datos de salida</p>
+    <div class="row-fields">
+      <div class="field">
+        <label>Fecha salida</label>
+        <input type="date" id="fechaSalida">
+      </div>
+      <div class="field">
+        <label>Hora salida</label>
+        <input type="time" id="horaSalida">
+      </div>
+    </div>
+
+    <div style="margin-top: 1.25rem;">
+      <button class="btn" onclick="calcular()">Calcular cobro</button>
+    </div>
+
+    <div class="error-box" id="errorBox"></div>
+  </div>
+
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <div>
+        <p class="r-label">Tiempo en parqueadero</p>
+        <p class="r-tiempo" id="rTiempo">—</p>
+      </div>
+      <span class="result-badge" id="rBadge">—</span>
+    </div>
+    <div class="result-body">
+      <div class="result-row">
+        <span class="r-key">Entrada</span>
+        <span class="r-val" id="rEntrada">—</span>
+      </div>
+      <div class="result-row">
+        <span class="r-key">Salida</span>
+        <span class="r-val" id="rSalida">—</span>
+      </div>
+      <div class="result-row">
+        <span class="r-key">Horas gratis</span>
+        <span class="r-val" style="color:var(--accent)" id="rGratis">—</span>
+      </div>
+      <div class="result-row">
+        <span class="r-key">Horas a cobrar</span>
+        <span class="r-val" id="rCobrar">—</span>
+      </div>
+    </div>
+    <div class="result-total">
+      <span class="t-label">Total a pagar</span>
+      <span class="t-value" id="rTotal">—</span>
+    </div>
+  </div>
+
+  <p class="footer">Tarifa vigente · $1.000 COP por hora adicional</p>
+</div>
+
+<script>
+  var pad = function(n){ return String(n).padStart(2,'0'); };
+
+  // Pre-fill con fecha/hora actual — compatible con Android e iOS
+  window.addEventListener('DOMContentLoaded', function() {
+    try {
+      var now = new Date();
+      var hoy = now.getFullYear() + '-' + pad(now.getMonth()+1) + '-' + pad(now.getDate());
+      var hora = pad(now.getHours()) + ':' + pad(now.getMinutes());
+      var ids = ['fechaEntrada','horaEntrada','fechaSalida','horaSalida'];
+      var vals = [hoy, hora, hoy, hora];
+      ids.forEach(function(id, i){
+        var el = document.getElementById(id);
+        el.value = vals[i];
+        // Forzar en caso de que el navegador mobile no lo tome
+        setTimeout(function(){ el.value = vals[i]; }, 200);
+      });
+    } catch(e){}
+  });
+
+  function leerCampos() {
+    // Lee el valor y lo limpia de cualquier formato raro que meta el browser mobile
+    function leer(id){ return (document.getElementById(id).value || '').trim(); }
+    return {
+      fE: leer('fechaEntrada'),
+      hE: leer('horaEntrada'),
+      fS: leer('fechaSalida'),
+      hS: leer('horaSalida')
+    };
+  }
+
+  function parseFechaHora(fecha, hora) {
+    // iOS no acepta 'YYYY-MM-DDTHH:MM:SS', necesita espacio en lugar de T en algunos casos
+    // Usamos los componentes directamente para evitar el problema
+    var pf = fecha.split('-');
+    var ph = hora.split(':');
+    if (pf.length < 3 || ph.length < 2) return null;
+    var d = new Date(+pf[0], +pf[1]-1, +pf[2], +ph[0], +ph[1], 0, 0);
+    if (isNaN(d.getTime())) return null;
+    return d;
+  }
+
+  function fmt(fecha, hora) {
+    var pf = fecha.split('-');
+    var dias = ['dom','lun','mar','mié','jue','vie','sáb'];
+    var meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    var dt = new Date(+pf[0], +pf[1]-1, +pf[2]);
+    return dias[dt.getDay()] + ' ' + +pf[2] + ' ' + meses[+pf[1]-1] + ' ' + pf[0] + '  ·  ' + hora;
+  }
+
+  function tiempoStr(minutos) {
+    var d = Math.floor(minutos / 1440);
+    var h = Math.floor((minutos % 1440) / 60);
+    var m = minutos % 60;
+    var parts = [];
+    if (d > 0) parts.push(d + (d===1?' día':' días'));
+    if (h > 0) parts.push(h + (h===1?' hora':' horas'));
+    if (m > 0) parts.push(m + ' min');
+    return parts.join(' ') || '0 min';
+  }
+
+  function mostrarError(msg) {
+    var eb = document.getElementById('errorBox');
+    eb.textContent = msg;
+    eb.style.display = 'block';
+    document.getElementById('resultCard').style.display = 'none';
+  }
+
+  function calcular() {
+    var eb = document.getElementById('errorBox');
+    var rc = document.getElementById('resultCard');
+    eb.style.display = 'none';
+    rc.style.display = 'none';
+
+    var c = leerCampos();
+
+    // Validar que los campos no estén vacíos
+    if (!c.fE || !c.hE || !c.fS || !c.hS) {
+      mostrarError('Completa todos los campos de fecha y hora antes de calcular.');
+      return;
+    }
+
+    // Validar formato fecha YYYY-MM-DD
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(c.fE) || !/^\d{4}-\d{2}-\d{2}$/.test(c.fS)) {
+      mostrarError('Formato de fecha inválido. Usa el selector de fecha.');
+      return;
+    }
+
+    // Validar formato hora HH:MM
+    if (!/^\d{2}:\d{2}$/.test(c.hE) || !/^\d{2}:\d{2}$/.test(c.hS)) {
+      mostrarError('Formato de hora inválido. Usa el selector de hora.');
+      return;
+    }
+
+    var entrada = parseFechaHora(c.fE, c.hE);
+    var salida  = parseFechaHora(c.fS, c.hS);
+
+    if (!entrada || !salida) {
+      mostrarError('No se pudo leer la fecha u hora. Vuelve a seleccionarlas.');
+      return;
+    }
+
+    if (salida.getTime() === entrada.getTime()) {
+      mostrarError('La hora de salida es igual a la de entrada. El tiempo es 0 minutos.');
+      return;
+    }
+
+    if (salida < entrada) {
+      mostrarError('La fecha/hora de salida debe ser posterior a la de entrada.');
+      return;
+    }
+
+    var diffMs  = salida.getTime() - entrada.getTime();
+    var diffMin = Math.floor(diffMs / 60000);
+    var diffH   = diffMs / 3600000;
+
+    var horasAdic   = Math.max(0, diffH - 2);
+    var horasACobrar = Math.ceil(horasAdic);
+    var total = horasACobrar * 1000;
+
+    document.getElementById('rEntrada').textContent = fmt(c.fE, c.hE);
+    document.getElementById('rSalida').textContent  = fmt(c.fS, c.hS);
+    document.getElementById('rTiempo').textContent  = tiempoStr(diffMin);
+    document.getElementById('rGratis').textContent  = diffH >= 2 ? '2 horas' : tiempoStr(diffMin) + ' (menos de 2 h)';
+    document.getElementById('rCobrar').textContent  = horasACobrar > 0
+      ? horasACobrar + (horasACobrar===1 ? ' hora' : ' horas')
+      : 'Ninguna';
+
+    var badge   = document.getElementById('rBadge');
+    var totalEl = document.getElementById('rTotal');
+
+    if (total === 0) {
+      badge.textContent = 'GRATIS';
+      badge.className   = 'result-badge gratis';
+      totalEl.textContent = '$0';
+      totalEl.className   = 't-value gratis-color';
+    } else {
+      badge.textContent = 'CON COBRO';
+      badge.className   = 'result-badge cobro';
+      totalEl.textContent = '$' + total.toLocaleString('es-CO');
+      totalEl.className   = 't-value cobro-color';
+    }
+
+    rc.style.display = 'block';
+    // Scroll suave al resultado en móvil
+    setTimeout(function(){ rc.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+  }
+</script>
+</body>
+</html>
